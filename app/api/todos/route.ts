@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-let todos: { id: number; text: string; completed: boolean }[] = [];
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
+    const todos = await prisma.todo.findMany({ orderBy: { id: 'asc' } });
     return NextResponse.json(todos);
 }
 
@@ -11,23 +11,23 @@ export async function POST(req: NextRequest) {
     if (!text || typeof text !== 'string') {
         return NextResponse.json({ error: 'Invalid text' }, { status: 400 });
     }
-    const newTodo = { id: Date.now(), text, completed: false };
-    todos.push(newTodo);
+    const newTodo = await prisma.todo.create({
+        data: { text, completed: false },
+    });
     return NextResponse.json(newTodo, { status: 201 });
 }
 
 export async function PATCH(req: NextRequest) {
     const { id, completed } = await req.json();
-    const todo = todos.find(t => t.id === id);
-    if (!todo) {
-        return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    }
-    todo.completed = completed;
+    const todo = await prisma.todo.update({
+        where: { id },
+        data: { completed },
+    });
     return NextResponse.json(todo);
 }
 
 export async function DELETE(req: NextRequest) {
     const { id } = await req.json();
-    todos = todos.filter(t => t.id !== id);
+    await prisma.todo.delete({ where: { id } });
     return NextResponse.json({ success: true });
 }
