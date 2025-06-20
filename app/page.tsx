@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Todo = {
     id: number;
@@ -11,19 +11,49 @@ type Todo = {
 export default function Home() {
     const [todos, setTodos] = useState<Todo[]>([]);
     const [input, setInput] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const addTodo = () => {
+    // Fetch todos from backend
+    useEffect(() => {
+        fetch('/api/todos')
+            .then(res => res.json())
+            .then(setTodos);
+    }, []);
+
+    const addTodo = async () => {
         if (!input.trim()) return;
-        setTodos([...todos, { id: Date.now(), text: input.trim(), completed: false }]);
+        setLoading(true);
+        const res = await fetch('/api/todos', {
+            method: 'POST',
+            body: JSON.stringify({ text: input.trim() }),
+            headers: { 'Content-Type': 'application/json' },
+        });
+        const newTodo = await res.json();
+        setTodos(todos => [...todos, newTodo]);
         setInput('');
+        setLoading(false);
     };
 
-    const toggleTodo = (id: number) => {
+    const toggleTodo = async (id: number, completed: boolean) => {
+        setLoading(true);
+        await fetch('/api/todos', {
+            method: 'PATCH',
+            body: JSON.stringify({ id, completed: !completed }),
+            headers: { 'Content-Type': 'application/json' },
+        });
         setTodos(todos => todos.map(todo => (todo.id === id ? { ...todo, completed: !todo.completed } : todo)));
+        setLoading(false);
     };
 
-    const removeTodo = (id: number) => {
+    const removeTodo = async (id: number) => {
+        setLoading(true);
+        await fetch('/api/todos', {
+            method: 'DELETE',
+            body: JSON.stringify({ id }),
+            headers: { 'Content-Type': 'application/json' },
+        });
         setTodos(todos => todos.filter(todo => todo.id !== id));
+        setLoading(false);
     };
 
     return (
@@ -37,10 +67,12 @@ export default function Home() {
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && addTodo()}
+                    disabled={loading}
                 />
                 <button
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                     onClick={addTodo}
+                    disabled={loading}
                 >
                     Add
                 </button>
@@ -53,7 +85,7 @@ export default function Home() {
                             className={`flex-1 cursor-pointer select-none ${
                                 todo.completed ? 'line-through text-gray-400' : ''
                             }`}
-                            onClick={() => toggleTodo(todo.id)}
+                            onClick={() => toggleTodo(todo.id, todo.completed)}
                         >
                             {todo.text}
                         </div>
@@ -61,6 +93,7 @@ export default function Home() {
                             className="ml-4 text-red-500 hover:text-red-700"
                             onClick={() => removeTodo(todo.id)}
                             aria-label="Delete"
+                            disabled={loading}
                         >
                             ✕
                         </button>
