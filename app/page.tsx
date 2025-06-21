@@ -8,6 +8,9 @@ type TodoList = {
     title: string;
     isPublic: boolean;
     todos: Todo[];
+    owner?: { email: string };
+    sharedWith?: { email: string }[];
+    createdAt: string;
 };
 
 type Todo = {
