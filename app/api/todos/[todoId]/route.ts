@@ -2,10 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { prisma } from '@/lib/prisma';
-import type { NextApiRequestContext } from 'next/server';
 
-export async function PATCH(req: NextRequest, context: NextApiRequestContext) {
-    const { params } = context;
+// @ts-expect-error Next.js does not provide types for route params
+export async function PATCH(req: NextRequest, { params }) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -17,9 +16,8 @@ export async function PATCH(req: NextRequest, context: NextApiRequestContext) {
     });
     return NextResponse.json(todo);
 }
-
-export async function DELETE(req: NextRequest, context: NextApiRequestContext) {
-    const { params } = context;
+// @ts-expect-error Next.js does not provide types for route params
+export async function DELETE(req: NextRequest, { params }) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
