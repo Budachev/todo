@@ -163,7 +163,7 @@ export default function Home() {
                     onClick={() => signIn('google')}
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
-                    Войти с Google
+                    Login with Google
                 </button>
             </div>
         );
@@ -192,13 +192,13 @@ export default function Home() {
                 <button className="md:hidden mb-4 text-right text-red-500" onClick={() => setSidebarOpen(false)}>
                     ✕
                 </button>
-                <h2 className="text-xl font-bold mb-4">Ваши списки</h2>
+                <h2 className="text-xl font-bold mb-4">Your lists</h2>
 
                 <div className="mb-3">
                     <div className="flex gap-2 mb-2">
                         <input
                             className="w-full px-2 py-1 border rounded"
-                            placeholder="Новый список"
+                            placeholder="New list title"
                             value={newListTitle}
                             onChange={e => setNewListTitle(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && createList()}
@@ -226,7 +226,7 @@ export default function Home() {
                 <div className="flex gap-2 mb-2">
                     <input
                         className="w-full px-2 py-1 border rounded"
-                        placeholder="Поиск по названию"
+                        placeholder="Search by title"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                     />
@@ -237,17 +237,17 @@ export default function Home() {
                         onChange={e => setSort(e.target.value as 'created' | 'title')}
                         className="w-full px-2 py-1 border rounded"
                     >
-                        <option value="created">Сначала новые</option>
-                        <option value="title">По алфавиту</option>
+                        <option value="created">New first</option>
+                        <option value="title">By name</option>
                     </select>
                 </div>
                 <div className="mb-4 text-xs text-gray-500">
-                    Всего списков: {lists.length} | Всего задач:{' '}
+                    Total lists: {lists.length} | Total todos:{' '}
                     {lists.reduce((sum, l) => sum + (l.todos?.length || 0), 0)}
                 </div>
                 <ul className="flex-1 overflow-y-auto">
                     {filteredLists.length === 0 && (
-                        <li className="text-gray-400 text-center py-4">Нет списков. Создайте новый!</li>
+                        <li className="text-gray-400 text-center py-4">No lists. Create one!</li>
                     )}
                     {filteredLists.map(list => (
                         <li
@@ -284,7 +284,7 @@ export default function Home() {
                     onClick={() => signOut()}
                     className="mt-4 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 w-full"
                 >
-                    Выйти
+                    Logout
                 </button>
             </aside>
 
@@ -305,7 +305,7 @@ export default function Home() {
                             <input
                                 className="flex-1 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
                                 type="text"
-                                placeholder="Добавить задачу..."
+                                placeholder="Add item..."
                                 value={input}
                                 onChange={e => setInput(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && addTodo()}
@@ -317,12 +317,12 @@ export default function Home() {
                                 onClick={addTodo}
                                 disabled={loading}
                             >
-                                Добавить
+                                Add
                             </button>
                         </div>
                         <ul className="max-w-lg space-y-2">
                             {selectedList.todos && selectedList.todos.length === 0 && (
-                                <li className="text-gray-400 text-center">Нет задач!</li>
+                                <li className="text-gray-400 text-center">No tasks!</li>
                             )}
                             {selectedList.todos &&
                                 selectedList.todos.map(todo => (
@@ -353,7 +353,7 @@ export default function Home() {
 
                         {selectedList?.sharedWith && selectedList.sharedWith.length > 0 && (
                             <div className="mb-4">
-                                <div className="font-semibold mb-1">Доступ имеют:</div>
+                                <div className="font-semibold mb-1">Access have:</div>
                                 <ul>
                                     {selectedList.sharedWith.map(user => (
                                         <li key={user.email} className="flex items-center gap-2">
@@ -362,7 +362,7 @@ export default function Home() {
                                                 <button
                                                     className="text-red-500 hover:text-red-700 text-xs"
                                                     onClick={async () => {
-                                                        if (!confirm(`Убрать доступ у ${user.email}?`)) return;
+                                                        if (!confirm(`Remove access from ${user.email}?`)) return;
                                                         setLoading(true);
                                                         const res = await fetch(
                                                             `/api/lists/${selectedList.id}/unshare`,
@@ -388,7 +388,7 @@ export default function Home() {
                                                     }}
                                                     disabled={loading}
                                                 >
-                                                    убрать
+                                                    delete
                                                 </button>
                                             )}
                                         </li>
@@ -412,7 +412,7 @@ export default function Home() {
                                     });
                                     setLoading(false);
                                     if (res.ok) {
-                                        alert('Пользователь приглашён!');
+                                        alert('User invited!');
                                     } else {
                                         const { error } = await res.json();
                                         alert(error || 'Ошибка');
@@ -424,13 +424,13 @@ export default function Home() {
                                     className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
                                     disabled={loading}
                                 >
-                                    Пригласить пользователя
+                                    Invite user
                                 </button>
                             </form>
                         )}
                     </>
                 ) : (
-                    <div className="text-gray-400">Выберите или создайте список</div>
+                    <div className="text-gray-400">Select or create a new list</div>
                 )}
             </main>
         </div>
