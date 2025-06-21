@@ -28,7 +28,7 @@ type Todo = {
 // }
 
 export default function Home() {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const [lists, setLists] = useState<TodoList[]>([]);
     const [selectedList, setSelectedList] = useState<TodoList | null>(null);
     const [newListTitle, setNewListTitle] = useState('');
