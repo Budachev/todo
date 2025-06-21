@@ -18,7 +18,8 @@ export async function PATCH(req: NextRequest, context: NextApiRequestContext) {
     return NextResponse.json(todo);
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { todoId: string } }) {
+export async function DELETE(req: NextRequest, context: NextApiRequestContext) {
+    const { params } = context;
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
